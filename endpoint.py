@@ -1,7 +1,7 @@
 import pymongo, config, json, re
 from dateutil import parser
 from datetime import datetime
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
@@ -9,11 +9,12 @@ conn = pymongo.MongoClient()[config.mongo_db][config.mongo_col]
 
 @app.route("/")
 def index():
-    return get_news()
+    query = request.args.get("q") if request.args.get("q") else ""
+    return get_news(query)
 
-def get_news():
+def get_news(query):
 	exit = []
-	records = conn.find().sort([('published_parsed', pymongo.DESCENDING)]).limit(125)
+	records = conn.find({"$or":[{"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
 		img = None
@@ -46,7 +47,5 @@ def get_news():
 			j = 1
 			i += 1
 	return json.dumps(exit)
-
-get_news()
 
 app.run(host='0.0.0.0', threaded=True)
