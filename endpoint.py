@@ -14,7 +14,7 @@ def index():
 
 def get_news(query):
 	exit = []
-	records = conn.find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"$or":[{"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
+	records = conn.find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
 		img = None
