@@ -39,9 +39,10 @@ def get_news(query):
 			published = parser.parse(record['published'])
 		str_published = datetime.strftime(published, "%d/%b")
 		title = record["title"]
+		type = record["source_table"]
 		if len(title) > 48:
 			title = title[:48] + "..."
-		exit.extend((record["_id"] + "|" + img, title, str_published, i, j))
+		exit.extend((record["_id"] + "|" + img, title, str_published, i, j, type))
 		j += 1
 		if j > rows:
 			j = 1
