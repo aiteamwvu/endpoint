@@ -7,6 +7,16 @@ app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db][config.mongo_col]
 
+@app.route('/signUp')
+def signUp():
+    return render_template('signUp.html')
+
+@app.route('/signUpUser', methods=['POST'])
+def signUpUser():
+    user =  request.form['username'];
+    password = request.form['password'];
+    return json.dumps({'status':'OK','user':user,'pass':password});
+
 @app.route("/")
 def index():
     query = request.args.get("q") if request.args.get("q") else ""
