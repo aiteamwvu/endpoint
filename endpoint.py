@@ -9,7 +9,7 @@ conn = pymongo.MongoClient()[config.mongo_db][config.mongo_col]
 
 @app.route('/ui')
 def ui():
-    return app.send_static_file('ui/index.html')
+    return app.send_static_file('/ui/index.html')
 
 @app.route("/")
 def index():
