@@ -7,15 +7,9 @@ app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db][config.mongo_col]
 
-@app.route('/signUp')
+@app.route('/ui')
 def signUp():
-    return render_template('signUp.html')
-
-@app.route('/signUpUser', methods=['POST'])
-def signUpUser():
-    user =  request.form['username'];
-    password = request.form['password'];
-    return json.dumps({'status':'OK','user':user,'pass':password});
+    return app.send_static_file('ui/index.html')
 
 @app.route("/")
 def index():
