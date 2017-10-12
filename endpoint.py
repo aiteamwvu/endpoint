@@ -5,11 +5,12 @@ from flask import Flask, request
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
-conn = pymongo.MongoClient()[config.mongo_db][config.mongo_col]
+conn = pymongo.MongoClient()[config.mongo_db]
 
-@app.route('ui')
-def ui():
-    return app.send_static_file('/ui/index.html')
+@app.route('/get_user')
+def get_user():
+    email = request.args.get("email") if request.args.get("email") else ""
+    return get_user(email)
 
 @app.route("/")
 def index():
@@ -18,7 +19,7 @@ def index():
 
 def get_news(query):
 	exit = []
-	records = conn.find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
+	records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
 		img = None
@@ -52,5 +53,20 @@ def get_news(query):
 			j = 1
 			i += 1
 	return json.dumps(exit)
+
+def get_user(email):
+	exit = []
+	user = conn[config.col_users].find_one({"email": email})
+	if user:
+		return json.dumps(user)
+	else:
+		new_user = {
+			"_id": email,
+			"email": email,
+			"keywords": []
+		}
+		conn[config.col_users].save(new_user)
+		return json.dumps(new_user)
+
 
 app.run(host='0.0.0.0', threaded=True)
