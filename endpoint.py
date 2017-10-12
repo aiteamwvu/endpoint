@@ -69,4 +69,4 @@ def get_user(email):
 		return json.dumps(new_user)
 
 
-app.run(host='0.0.0.0', threaded=True)
+app.run(host='0.0.0.0', threaded=True, port=5000)
