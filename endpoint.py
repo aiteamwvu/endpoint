@@ -60,8 +60,15 @@ def get_news(query):
 			i += 1
 	return json.dumps(exit)
 
+def set_user(email, keywords):
+	user = conn[config.col_users].find_one({"email": email})
+    for key in keywords:
+        if not key in user["keywords"]:
+            user["keywords"].append(key)
+    conn[config.col_users].save(user)
+    return json.dumps(user)
+
 def get_user(email):
-	exit = []
 	user = conn[config.col_users].find_one({"email": email})
 	if user:
 		return json.dumps(user)
