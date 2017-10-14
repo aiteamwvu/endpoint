@@ -62,7 +62,7 @@ def get_news(query):
 
 def set_user(email, keywords):
 	user = conn[config.col_users].find_one({"email": email})
-    keys = keywords.split(',')
+    keys = keywords.split(",")
     for key in keys:
         if not key in user["keywords"]:
             user["keywords"].append(key)
