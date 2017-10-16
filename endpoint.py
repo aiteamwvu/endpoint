@@ -7,6 +7,11 @@ app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db]
 
+@app.route('/get_keywords')
+def get_keywords():
+    email = request.args.get("email") if request.args.get("email") else ""
+    return get_keywords(email)
+
 @app.route('/set_user')
 def set_user():
     keywords = request.args.get("keywords") if request.args.get("keywords") else ""
