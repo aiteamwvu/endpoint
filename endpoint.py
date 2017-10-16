@@ -60,6 +60,10 @@ def get_news(query):
 			i += 1
 	return json.dumps(exit)
 
+def get_keywords(email):
+    user = conn[config.col_users].find_one({"email": email})
+    return json.dumps(user["keywords"])
+
 def set_user(email, keywords):
     user = conn[config.col_users].find_one({"email": email})
     keys = keywords.split(",")
