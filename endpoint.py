@@ -23,6 +23,11 @@ def get_user():
     email = request.args.get("email") if request.args.get("email") else ""
     return get_user(email)
 
+@app.route('/get_content')
+def get_content():
+	url = request.args.get("url") if request.args.get("url") else ""
+	return get_content(url)
+
 @app.route("/")
 def index():
     query = request.args.get("q") if request.args.get("q") else ""
@@ -59,9 +64,10 @@ def get_news(query):
 		str_published = datetime.strftime(published, "%d/%b")
 		title = record["title"]
 		source = record["source_table"]
+		titlefull = title
 		if len(title) > 48:
 			title = title[:48] + "..."
-		exit.extend((record["_id"] + "|" + img, title, str_published, i, j, source))
+		exit.extend((record["_id"] + "|" + img, title, str_published, i, j, source, titlefull))
 		j += 1
 		if j > rows:
 			j = 1
@@ -93,6 +99,23 @@ def get_user(email):
 		}
 		conn[config.col_users].save(new_user)
 		return json.dumps(new_user)
+
+def get_content(url):
+	record = conn[config.col_article].find_one({"_id" : url})
+	author = record["author"]
+	title = record["title"]
+	sourceweb = record["souce_name"]
+	content = record["content"][0]["value"]
+	
+	article = {
+				"_id" : url,
+				"title": title,
+				"author": author,
+				"source": source,
+				"content": content
+	}
+
+	return json.dump(article)
 
 
 app.run(host='0.0.0.0', threaded=True, port=5000)
