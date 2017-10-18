@@ -44,9 +44,12 @@ def get_news(query):
 					img = link["href"]
 		if not img and  "content" in record and len(record["content"]) > 0:
 			if "value" in record["content"][0]:
-				imgs = re.findall('src="(.*?)"', record["content"][0]["value"], re.DOTALL)
-				if len(imgs) > 0:
-					img = imgs[0]
+				try:
+					imgs = re.findall('src="(.*?)"', record["content"][0]["value"], re.DOTALL)
+					if len(imgs) > 0:
+						img = imgs[0]
+				except:
+					pass
 		if not img:
 			#print(json.dumps(record))
 			img = "./index_files/default.png"
