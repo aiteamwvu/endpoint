@@ -101,7 +101,7 @@ def get_user(email):
 		return json.dumps(new_user)
 
 def get_content(url):
-	record = conn[config.col_article].find({"_id" : url})
+	record = conn[config.mongo_col].find({"_id" : url})
 	author = record["author"]
 	title = record["title"]
 	sourceweb = record["souce_name"]
