@@ -23,11 +23,6 @@ def get_user():
     email = request.args.get("email") if request.args.get("email") else ""
     return get_user(email)
 
-@app.route('/get_content')
-def get_content():
-	url = request.args.get("url") if request.args.get("url") else ""
-	return get_content(url)
-
 @app.route("/")
 def index():
     query = request.args.get("q") if request.args.get("q") else ""
@@ -99,23 +94,5 @@ def get_user(email):
 		}
 		conn[config.col_users].save(new_user)
 		return json.dumps(new_user)
-
-def get_content(url):
-	record = conn[config.mongo_col].find({"_id" : url})
-	author = record["author"]
-	title = record["title"]
-	sourceweb = record["souce_name"]
-	content = record["content"][0]["value"]
-	
-	article = {
-				"_id" : url,
-				"title": title,
-				"author": author,
-				"source": source,
-				"content": content
-	}
-
-	return json.dump(article)
-
 
 app.run(host='0.0.0.0', threaded=True, port=5000)
