@@ -123,7 +123,10 @@ def get_content(url):
 	if "content" in record and "value" in record["content"][0]: 
 		content = record["content"][0]["value"]
 	else:
-		content = "Content not available"
+		if "summary" in record:
+			content = record["summary"]
+		else:
+			content = "No content available"
 	
 	exit.extend((record["_id"], author, title, sourceweb, content))
 	
