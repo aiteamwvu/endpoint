@@ -127,8 +127,15 @@ def get_content(url):
 			content = record["summary"]
 		else:
 			content = "No content available"
+			
+	if "source_content" in record:
+		if record["source_content"] == "video":
+			if "link" in record:
+				videolink = record["link"]
+	if not videolink:
+		videolink = ""
 	
-	exit.extend((record["_id"], author, title, sourceweb, content))
+	exit.extend((record["_id"], author, title, sourceweb, content, videolink))
 	
 	return json.dumps(exit)
 
