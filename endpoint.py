@@ -106,6 +106,6 @@ def get_user(email):
 	
 def get_content(url):
 	record = conn[config.mongo_col].find({"_id" : url})
-	return json.dump(record)
+	return json.dumps(record)
 
 app.run(host='0.0.0.0', threaded=True, port=5000)
