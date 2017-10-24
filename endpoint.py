@@ -106,32 +106,6 @@ def get_user(email):
 	
 def get_content(url):
 	record = conn[config.mongo_col].find({"_id" : url})
-
-	if "author" in record:
-		author = record["author"]
-	else: 
-		author = "no author"
-
-	title = record["title"]
-	
-	if "source_name" in record:
-		sourceweb = record["souce_name"]
-	else:
-		sourceweb = "no source"
-
-	if "content" in record and "value" in record["content"][0]: 
-		content = record["content"][0]["value"]
-	else:
-		content = "Content not available"
-	
-	article = {
-				"_id" : url,
-				"title": title,
-				"author": author,
-				"source": source,
-				"content": content
-	}
-
-	return json.dump(article)
+	return json.dump(record)
 
 app.run(host='0.0.0.0', threaded=True, port=5000)
