@@ -59,7 +59,10 @@ def get_news(query):
 		str_published = datetime.strftime(published, "%d/%b")
 		title = record["title"]
 		source = record["source_table"]
-		author = record["author"]
+		if "author" in record:
+			author = record["author"]
+		else:
+			author = ""
 		titlefull = title
 		if len(title) > 48:
 			title = title[:48] + "..."
