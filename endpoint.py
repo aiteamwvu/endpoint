@@ -127,7 +127,8 @@ def get_content(url):
 			content = record["summary"]
 		else:
 			content = "No content available"
-			
+		
+	videolink = None
 	if "source_content" in record:
 		if record["source_content"] == "video":
 			if "link" in record:
