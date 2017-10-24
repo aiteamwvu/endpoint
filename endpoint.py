@@ -116,7 +116,7 @@ def get_content(url):
 	title = record["title"]
 	
 	if "source_name" in record:
-		sourceweb = record["souce_name"]
+		sourceweb = record["source_name"]
 	else:
 		sourceweb = "no source available"
 
