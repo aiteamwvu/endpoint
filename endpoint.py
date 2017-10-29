@@ -28,6 +28,12 @@ def get_content():
     url = request.args.get("url") if request.args.get("url") else ""
     return get_content(url)
 
+@app.route('/set_rating')
+def set_rating();
+	rating = request.args.get("rating") if request.args.get("rating") else ""
+	url = request.args.get("url") if request.args.get("url") else ""
+	return set_rating(rating, url)
+
 @app.route("/")
 def index():
     query = request.args.get("q") if request.args.get("q") else ""
@@ -91,6 +97,12 @@ def set_user(email, keywords):
     conn[config.col_users].save(user)
     return json.dumps(user)
 
+def set_rating(rating, url):
+	record = conn[config.mongo_col].find_one({"_id" : url})
+	if not "rating" in record || record["rating"] != rating:
+		conn[config.mongo_col].update({"_id" : url },{$set : {"rating": rating}})
+	return json.dumps(record)
+
 def get_user(email):
 	user = conn[config.col_users].find_one({"email": email})
 	if user:
@@ -127,6 +139,11 @@ def get_content(url):
 			content = record["summary"]
 		else:
 			content = "No content available"
+			
+	if "rating" in record:
+		rating = record["rating"]
+	else:
+		rating = ""
 		
 	videolink = None
 	if "source_content" in record:
@@ -136,7 +153,7 @@ def get_content(url):
 	if not videolink:
 		videolink = ""
 	
-	exit.extend((record["_id"], author, title, sourceweb, content, videolink))
+	exit.extend((record["_id"], author, title, sourceweb, content, videolink, rating))
 	
 	return json.dumps(exit)
 
