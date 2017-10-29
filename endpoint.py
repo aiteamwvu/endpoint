@@ -29,7 +29,7 @@ def get_content():
     return get_content(url)
 
 @app.route('/set_rating')
-def set_rating();
+def set_rating():
 	rating = request.args.get("rating") if request.args.get("rating") else ""
 	url = request.args.get("url") if request.args.get("url") else ""
 	return set_rating(rating, url)
