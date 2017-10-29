@@ -100,7 +100,7 @@ def set_user(email, keywords):
 def set_rating(rating, url):
 	record = conn[config.mongo_col].find_one({"_id" : url})
 	if not "rating" in record or record["rating"] != rating:
-		conn[config.mongo_col].update({"_id" : url },{$set : {"rating": rating}})
+		conn[config.mongo_col].update({"_id" : url },{"$set" : {"rating": rating}})
 	return json.dumps(record)
 
 def get_user(email):
