@@ -23,10 +23,10 @@ def dbSearch(searchString):
       return results
 
 def neo4jToMongo(article):
-   return mongoTable.find_one({ "source_url" : article['url'] })
+   return mongoTable.find_one({ "link" : article['link'] })
 
 def mongoToNeo4j(article):
-   return neoDriver.session().run( "MATCH (a:Article { link : $link }) RETURN A LIMIT 1", link=article['source_url'])
+   return neoDriver.session().run( "MATCH (a:Article { link : $link }) RETURN A LIMIT 1", link=article['link'])
 
 
 def uploadNeo():

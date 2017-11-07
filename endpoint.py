@@ -3,6 +3,7 @@ from dateutil import parser
 from datetime import datetime
 from flask import Flask, request
 from flask_cors import CORS
+import searchEndpoint
 app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db]
@@ -42,10 +43,11 @@ def index():
 def get_news(query):
 	exit = []
         records =  []
-        keywords = query.split(" ")
+        keywords = query.split()
         with neo4jDriver.session() as session:
-           records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-(h:Has)->(k) WITH a "
-	records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
+           records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-(h:Has)->(k) WITH a, sum(h.certainty) AS rank RETURN a ORDER BY rank DESC LIMIT 125", keywords=keywords)
+        records = [searchEndpoint.neo4jToMongo(x) for x in records] 
+	#records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
 		img = None
