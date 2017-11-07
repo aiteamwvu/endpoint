@@ -41,6 +41,10 @@ def index():
 
 def get_news(query):
 	exit = []
+        records =  []
+        keywords = query.split(" ")
+        with neo4jDriver.session() as session:
+           records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-(h:Has)->(k) WITH a "
 	records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
