@@ -22,8 +22,8 @@ def dbSearch(searchString):
       keywords=keywords)
       return results
 
-def neo4jToMongo(article):
-   return mongoTable.find_one({ "link" : article['link'] })
+def linkToMongo(link):
+   return mongoTable.find_one({ "link" : link })
 
 def mongoToNeo4j(article):
    return neoDriver.session().run( "MATCH (a:Article { link : $link }) RETURN A LIMIT 1", link=article['link'])

@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Flask, request
 from flask_cors import CORS
 import searchEndpoint
+from searchEndpoint import neoDriver
 app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db]
@@ -39,14 +40,23 @@ def set_rating():
 def index():
     query = request.args.get("q") if request.args.get("q") else ""
     return get_news(query)
-
+def listToDict(l):
+   d = dict()
+   for (x, y) in d:
+      if x in d.keys():
+         d[x].add(y)
+      else:
+         d[x] = list(y)
+   return d  
 def get_news(query):
 	exit = []
-        records =  []
-        keywords = query.split()
-        with neo4jDriver.session() as session:
-           records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-(h:Has)->(k) WITH a, sum(h.certainty) AS rank RETURN a ORDER BY rank DESC LIMIT 125", keywords=keywords)
-        records = [searchEndpoint.neo4jToMongo(x) for x in records] 
+	records = []
+	keywords = list(query.split())
+	with neoDriver.session() as session:
+		records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-[h:Has]->(k) WITH a, sum(h.certainty) AS rank RETURN a.link AS link ORDER BY rank DESC LIMIT 125", keywords=keywords)
+	
+	
+	records = [searchEndpoint.linkToMongo(x["link"]) for x in records] 
 	#records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
 	i, j, rows = 1, 1, 9
 	for record in records:
