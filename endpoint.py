@@ -59,12 +59,14 @@ def get_news(query):
 			"MATCH (a:Article)-[h:Has]->(k) WITH a, collect(k.name) as keys,  sum(h.certainty) AS rank" + \ 
 			"RETURN a.link AS link, keys, rank ORDER BY rank DESC", keywords=keywords)
 	
-	neos = { record['link'] : record['keys'] for record in records } 
+	neos = { record['link'] : { 'keys' : record['keys'], 'rank' : record['rank'] }  for record in records } 
 	links = neos.keys()
 	records = conn[config.mongo_col].find({"link": { "$in" : links } )
 	print(records)
-
-	records = [searchEndpoint.neoToMongo(x) for x in records] 
+	for record in records:
+		record.update(neos[record['link']])
+	record = sorted(record, lambda x: x['rank'])
+	
 	#The records come back with an extra attribute 'keys', the value of which is a list of strings
 	i, j, rows = 1, 1, 9
 	for record in records:
