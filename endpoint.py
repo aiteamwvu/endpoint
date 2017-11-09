@@ -53,16 +53,25 @@ def get_news(query):
 	records = []
 	keywords = list(query.split())
 	with neoDriver.session() as session:
-		records = session.run("Match (k:Keyword) WHERE k.name in $keywords MATCH (a:Article)-[h:Has]->(k) WITH a, sum(h.certainty) AS rank RETURN a.link AS link ORDER BY rank DESC LIMIT 125", keywords=keywords)
+		records = session.run( \ 
+			"Match (k:Keyword) WHERE k.name in $keywords" + \ 
+			"WITH k" + \
+			"MATCH (a:Article)-[h:Has]->(k) WITH a, collect(k.name) as keys,  sum(h.certainty) AS rank" + \ 
+			"RETURN a.link AS link, keys, rank ORDER BY rank DESC", keywords=keywords)
 	
-	
-	records = [searchEndpoint.linkToMongo(x["link"]) for x in records] 
-	#records = conn[config.mongo_col].find({"$or":[{"title": re.compile(query, re.IGNORECASE)}, {"content.value": re.compile(query, re.IGNORECASE)}, {"summary": re.compile(query, re.IGNORECASE)}]}).sort([('timestamp', pymongo.DESCENDING)]).limit(125)
+	neos = { record['link'] : record['keys'] for record in records } 
+	links = neos.keys()
+	records = conn[config.mongo_col].find({"link": { "$in" : links } )
+	print(records)
+
+	records = [searchEndpoint.neoToMongo(x) for x in records] 
+	#The records come back with an extra attribute 'keys', the value of which is a list of strings
 	i, j, rows = 1, 1, 9
 	for record in records:
+		#print(record)
 		img = None
-		if "media_thumbnail" in record and "url" in record["media_thumbnail"][0]:
-			img = record["media_thumbnail"][0]["url"]
+		#if "media_thumbnail" in record and "url" in record["media_thumbnail"][0]:
+		#	img = record["media_thumbnail"][0]["url"]
 		if not img and "media_content" in record and "url" in record["media_content"][0]:
 			img = record["media_content"][0]["url"]
 		if not img and "links" in record and len(record["links"]) > 0:
