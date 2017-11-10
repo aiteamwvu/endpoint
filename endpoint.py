@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db]
 
-debug = True
+debug = False
 
 @app.route('/get_keywords')
 def get_keywords():
@@ -65,14 +65,14 @@ def get_news(query):
 	if debug:
 		print('Neo4j Results')
 		print(neos)
-	links = neos.keys()
+	links = list(neos.keys())
 	records = list(conn[config.mongo_col].find({"link": { "$in" : links } } ))
 	if debug:
 		print('Mongo Results')
 		print(records)
 	for record in records:
 		record.update(neos[record['link']])
-	records = sorted(records, lambda x: x['rank'])
+	records = sorted(records, key=lambda x: x['rank'])
 	if debug:
 		print('Combined Results')
 		print(records)
