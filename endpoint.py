@@ -9,6 +9,8 @@ app = Flask(__name__)
 CORS(app)
 conn = pymongo.MongoClient()[config.mongo_db]
 
+debug = True
+
 @app.route('/get_keywords')
 def get_keywords():
     email = request.args.get("email") if request.args.get("email") else ""
@@ -53,20 +55,27 @@ def get_news(query):
 	records = []
 	keywords = list(query.split())
 	with neoDriver.session() as session:
-		records = session.run( \ 
-			"Match (k:Keyword) WHERE k.name in $keywords" + \ 
-			"WITH k" + \
-			"MATCH (a:Article)-[h:Has]->(k) WITH a, collect(k.name) as keys,  sum(h.certainty) AS rank" + \ 
-			"RETURN a.link AS link, keys, rank ORDER BY rank DESC", keywords=keywords)
+		records = session.run( \
+			"Match (k:Keyword) WHERE k.name in $keywords " + \
+			"WITH k " + \
+			"MATCH (a:Article)-[h:Has]->(k) WITH a, collect(k.name) as keys,  sum(h.certainty) AS rank " + \
+			"RETURN a.link AS link, keys, rank ORDER BY rank DESC LIMIT 125", keywords=keywords)
 	
 	neos = { record['link'] : { 'keys' : record['keys'], 'rank' : record['rank'] }  for record in records } 
+	if debug:
+		print('Neo4j Results')
+		print(neos)
 	links = neos.keys()
-	records = conn[config.mongo_col].find({"link": { "$in" : links } )
-	print(records)
+	records = list(conn[config.mongo_col].find({"link": { "$in" : links } } ))
+	if debug:
+		print('Mongo Results')
+		print(records)
 	for record in records:
 		record.update(neos[record['link']])
-	record = sorted(record, lambda x: x['rank'])
-	
+	records = sorted(records, lambda x: x['rank'])
+	if debug:
+		print('Combined Results')
+		print(records)
 	#The records come back with an extra attribute 'keys', the value of which is a list of strings
 	i, j, rows = 1, 1, 9
 	for record in records:
