@@ -79,7 +79,7 @@ def get_news(query):
 	#The records come back with an extra attribute 'keys', the value of which is a list of strings
 	i, j, rows = 1, 1, 9
 	for record in records:
-		#print(record)
+		print(record)
 		img = None
 		#if "media_thumbnail" in record and "url" in record["media_thumbnail"][0]:
 		#	img = record["media_thumbnail"][0]["url"]
