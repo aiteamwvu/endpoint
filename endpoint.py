@@ -79,7 +79,7 @@ def get_news(query):
 	#The records come back with an extra attribute 'keys', the value of which is a list of strings
 	i, j, rows = 1, 1, 9
 	for record in records:
-		print(record)
+		#print(record)
 		img = None
 		#if "media_thumbnail" in record and "url" in record["media_thumbnail"][0]:
 		#	img = record["media_thumbnail"][0]["url"]
@@ -105,6 +105,7 @@ def get_news(query):
 			published = parser.parse(record['published'])
 		str_published = datetime.strftime(published, "%d/%b")
 		title = record["title"]
+		keys = record["keys"]
 		source = record["source_table"]
 		if "author" in record:
 			author = record["author"]
@@ -113,7 +114,7 @@ def get_news(query):
 		titlefull = title
 		if len(title) > 48:
 			title = title[:48] + "..."
-		exit.extend((record["_id"] + "|" + img, title, str_published, i, j, source, titlefull, author))
+		exit.extend((record["_id"] + "|" + img, title, str_published, i, j, source, titlefull, author, keys))
 		j += 1
 		if j > rows:
 			j = 1
