@@ -131,8 +131,8 @@ def set_user(email, keywords):
     for key in keys:
         if not key in user["keywords"]:
             user["keywords"].append(key)
-	else:
-	    user["keywords"].remove(key)
+        else:
+            user["keywords"].remove(key)
     conn[config.col_users].save(user)
     return json.dumps(user)
 
