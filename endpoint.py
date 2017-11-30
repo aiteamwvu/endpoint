@@ -22,6 +22,12 @@ def set_user():
     email = request.args.get("email") if request.args.get("email") else ""
     return set_user(email, keywords)
 
+@app.route('/delete_keywords')
+def set_user():
+    keywords = request.args.get("keywords") if request.args.get("keywords") else ""
+    email = request.args.get("email") if request.args.get("email") else ""
+    return delete_keywords(email, keywords)
+
 @app.route('/get_user')
 def get_user():
     email = request.args.get("email") if request.args.get("email") else ""
@@ -131,8 +137,15 @@ def set_user(email, keywords):
     for key in keys:
         if not key in user["keywords"]:
             user["keywords"].append(key)
-        else:
-            user["keywords"].remove(key)
+    conn[config.col_users].save(user)
+    return json.dumps(user)
+
+def delete_keywords(email, keywords):
+    user = conn[config.col_users].find_one({"email": email})
+    keys = keywords.split(",")
+    for key in keys:
+        if key in user["keywords"]:
+	    user["keywords"].remove(key)
     conn[config.col_users].save(user)
     return json.dumps(user)
 
