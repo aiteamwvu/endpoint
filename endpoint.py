@@ -23,7 +23,7 @@ def set_user():
     return set_user(email, keywords)
 
 @app.route('/delete_keywords')
-def set_user():
+def delete_keywords():
     keywords = request.args.get("keywords") if request.args.get("keywords") else ""
     email = request.args.get("email") if request.args.get("email") else ""
     return delete_keywords(email, keywords)
