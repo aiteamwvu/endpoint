@@ -145,7 +145,7 @@ def delete_keywords(email, keywords):
     keys = keywords.split(",")
     for key in keys:
         if key in user["keywords"]:
-	    user["keywords"].remove(key)
+            user["keywords"].remove(key)
     conn[config.col_users].save(user)
     return json.dumps(user)
 
